@@ -20,14 +20,34 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/boats/search", async (string? keyword, AppDbContext db) =>
 {
-    if (keyword != null && !keyword.All(char.IsLetter))
+    if (keyword != null && !IsValidKeyword(keyword))
         return Results.BadRequest("Keyword must contain letters only.");
 
+    keyword = keyword?.Trim();
+
     var boats = await db.Boats
-        .Where(b => keyword == null || b.BoatName.Contains(keyword))
+        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.BoatName, $"%{keyword}%"))
         .ToListAsync();
 
     return Results.Ok(boats);
 });
 
-app.Run(); // ← this was missing
+app.MapGet("/owners/search", async (string? keyword, AppDbContext db) =>
+{
+    if (keyword != null && !IsValidKeyword(keyword))
+        return Results.BadRequest("Keyword must contain letters only.");
+
+    keyword = keyword?.Trim();
+
+    var boatOwners = await db.BoatOwners
+        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.OwnerName, $"%{keyword}%"))
+        .ToListAsync();
+
+    return Results.Ok(boatOwners);
+});
+
+bool IsValidKeyword(string keyword) => 
+    keyword.All(c => char.IsLetter(c) || c == ' ');
+
+
+app.Run(); 
