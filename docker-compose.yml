@@ -20,7 +20,7 @@ services:
  
   backend:
     build: ./backend
-    restart: "no"
+    restart: "unless-stopped"
     ports:
       - "8080:8080"
     environment:
