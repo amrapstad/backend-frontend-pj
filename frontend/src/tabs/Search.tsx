@@ -1,7 +1,10 @@
 import { Input } from '@base-ui/react/input'
-import styles from '../App.module.css'
+import selectStyles from '../css/select.module.css';
+import cardStyles from '../css/card.module.css';
 import { Select } from '@base-ui/react/select';
 import { useState, useEffect } from 'react'
+
+const styles = { ...selectStyles, ...cardStyles };
 
 
 const filter_search = [
@@ -15,7 +18,7 @@ export default function Search() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<string>('Boats')
-  
+
   useEffect(() => {
     handleBoatSearch("")
   }, [])
@@ -62,41 +65,41 @@ export default function Search() {
 
   return (
     <>
-
-    <div className={styles.Field}>
-      <Select.Root items={filter_search} defaultValue="Boats" onValueChange={(value) => handleModeChange(value ?? 'Boats')}>
+      <h1> Search </h1>
+      <div className={styles.Field}>
+        <Select.Root items={filter_search} defaultValue="Boats" onValueChange={(value) => handleModeChange(value ?? 'Boats')}>
           <Select.Label className={styles.Label}>Select Search Type</Select.Label>
           <Select.Trigger className={styles.Select}>
-          <Select.Value className={styles.Value} placeholder="Select search type" />
-          <Select.Icon className={styles.SelectIcon}>
+            <Select.Value className={styles.Value} placeholder="Select search type" />
+            <Select.Icon className={styles.SelectIcon}>
               <ChevronUpDownIcon />
-          </Select.Icon>
+            </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-          <Select.Positioner className={styles.Positioner} sideOffset={8}>
+            <Select.Positioner className={styles.Positioner} sideOffset={8}>
               <Select.Popup className={styles.Popup}>
-              <Select.ScrollUpArrow className={styles.ScrollArrow} />
-              <Select.List className={styles.List}>
+                <Select.ScrollUpArrow className={styles.ScrollArrow} />
+                <Select.List className={styles.List}>
                   {filter_search.map(({ label, value }) => (
-                  <Select.Item key={label} value={value} className={styles.Item}>
+                    <Select.Item key={label} value={value} className={styles.Item}>
                       <Select.ItemIndicator className={styles.ItemIndicator}>
-                      <CheckIcon className={styles.ItemIndicatorIcon} />
+                        <CheckIcon className={styles.ItemIndicatorIcon} />
                       </Select.ItemIndicator>
                       <Select.ItemText className={styles.ItemText}>{label}</Select.ItemText>
-                  </Select.Item>
+                    </Select.Item>
                   ))}
-              </Select.List>
-              <Select.ScrollDownArrow className={styles.ScrollArrow} />
+                </Select.List>
+                <Select.ScrollDownArrow className={styles.ScrollArrow} />
               </Select.Popup>
-          </Select.Positioner>
+            </Select.Positioner>
           </Select.Portal>
-      </Select.Root>
-    </div>
-    
-    {loading && <p>Loading...</p>}
-    {error && <p style={{ color: 'red' }}>{error}</p>} 
+        </Select.Root>
+      </div>
 
-    <Input
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <Input
         placeholder={`Search for ${mode} and hit "Enter"`}
         className={styles.inputClass}
         value={inputValue}
@@ -105,21 +108,21 @@ export default function Search() {
           if (e.key === 'Enter' && mode === 'Boats') handleBoatSearch(inputValue)
           else if (e.key === 'Enter' && mode === 'Owners') handleOwnerSearch(inputValue)
         }}
-    />
+      />
 
-    {mode === 'Boats' && items.map((item) => (
-      <div className={styles.card} key={item.id}>
-        <h3>{item.boatName}</h3>
-        <p>Purchased: {new Date(item.purchaseDate).toLocaleDateString()}</p>
-      </div>
-    ))}
-    
-    {mode === 'Owners' && items.map((item) => (
-      <div className={styles.card} key={item.id}>
-        <h3>{item.ownerName}</h3>
-        <p>Mail: {item.email}</p>
-      </div>
-    ))}
+      {mode === 'Boats' && items.map((item) => (
+        <div className={styles.card} key={item.id}>
+          <h3>{item.boatName}</h3>
+          <p>Purchased: {new Date(item.purchaseDate).toLocaleDateString()}</p>
+        </div>
+      ))}
+
+      {mode === 'Owners' && items.map((item) => (
+        <div className={styles.card} key={item.id}>
+          <h3>{item.ownerName}</h3>
+          <p>Mail: {item.email}</p>
+        </div>
+      ))}
     </>
   )
 }

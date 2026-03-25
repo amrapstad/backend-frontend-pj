@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react'
 import * as React from 'react';
-import Search from './sites/Search'
+import Tab from './components/Tab'
 
 function App() {
   return (
     <>
-      <Search />
+      <Tab />
     </>
   )
 }
