@@ -47,6 +47,11 @@ The application manages the following primary entities:
    docker compose down -v
    ```
 
+## Dev Containers
+This project comes with dedicated Visual Studio Code Dev Containers to ensure a consistent development environment without needing to install the SDKs locally:
+- **Backend Dev Container**: Located in `.devcontainer/backend_env`. It spins up a .NET 9 SDK environment with the necessary VS Code extensions for C# development. It forwards ports 5000 (HTTP) and 5001 (HTTPS).
+- **Frontend Dev Container**: Located in `.devcontainer/frontend_env`. It sets up a Node 22 environment configured for Vite and React development, alongside ESLint and Prettier extensions. It forwards port 5173 for the Vite dev server.
+
 ## Development Structure
 - `./frontend`: Contains the React/Vite web application. You can navigate into this directory and run `npm run dev` for local frontend development (assuming Node.js is installed).
 - `./backend`: Contains the .NET 9 ASP.NET Core API.
