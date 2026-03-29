@@ -1,0 +1,32 @@
+{
+  "hash": "c4346c36",
+  "configHash": "6ec41d18",
+  "lockfileHash": "58e984b7",
+  "browserHash": "bda6aa5b",
+  "optimized": {
+    "@base-ui/react/input": {
+      "src": "../../node_modules/@base-ui/react/esm/input/index.js",
+      "file": "@base-ui_react_input.js",
+      "fileHash": "05a50649",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "d3516b22",
+      "needsInterop": true
+    },
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "70cd7cb6",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "react-TUYU05Ph": {
+      "file": "react-TUYU05Ph.js",
+      "isDynamicEntry": false
+    }
+  }
+}
