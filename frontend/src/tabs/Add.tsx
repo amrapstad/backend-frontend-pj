@@ -23,33 +23,21 @@ export default function Add() {
         setErrors({});
 
         try {
-            // Process Boat if not using existing
-            if (!configurations.includes('boat_exists')) {
-                const bRes = await fetch('/api/boats', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        boatName: formData.get('boat_name'), 
-                        modelYear: parseInt(formData.get('year_model') as string) || 0
-                    })
-                });
-                if (!bRes.ok) throw new Error(await bRes.text() || 'Failed to create boat');
-            }
+            const rRes = await fetch('/api/receipts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    boatName: formData.get('boat_name'),
+                    modelYear: parseInt(formData.get('year_model') as string) || 0,
+                    ownerName: formData.get('owner_name'),
+                    email: formData.get('email'),
+                    purchaseDate: formData.get('purchase_date'),
+                    useExistingBoat: configurations.includes('boat_exists'),
+                    useExistingOwner: configurations.includes('owner_exists'),
+                })
+            });
+            if (!rRes.ok) throw new Error(await rRes.text() || 'Failed to create receipt');
 
-            // Process Owner if not using existing
-            if (!configurations.includes('owner_exists')) {
-                const oRes = await fetch('/api/owners', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        ownerName: formData.get('owner_name'),
-                        email: formData.get('email')
-                    })
-                });
-                if (!oRes.ok) throw new Error(await oRes.text() || 'Failed to create owner');
-            }
-            
-            // Successfully processed both API requests.
             alert("Success!");
         } catch (err: any) {
             setErrors({ server: err.message || 'An error occurred' });
@@ -63,7 +51,7 @@ export default function Add() {
             <h1> Add </h1>
             <CompCheckboxGroup value={configurations} onValueChange={setConfigurations} />
             {errors.server && <p style={{ color: 'red' }}>{errors.server}</p>}
-            
+
             <Form onSubmit={handleSubmit} errors={errors}>
                 <div className={styles.Form}>
                     <h3>Boat</h3>
