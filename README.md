@@ -1,7 +1,7 @@
 # Boat Management Application
 
 ## Overview
-This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a modern React frontend, a robust ASP.NET Core backend API, and a PostgreSQL database.
+This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a React frontend, ASP.NET Core backend API, and a PostgreSQL database.
 
 ## Architecture & Technology Stack
 - **Frontend**: React 19, Vite, and Base UI. Built and served via Nginx in a Docker container.
@@ -19,7 +19,6 @@ The application manages the following primary entities:
 
 ## Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) installed.
-- [Docker Compose](https://docs.docker.com/compose/install/) installed.
 
 ## How to Run Locally
 
@@ -34,9 +33,8 @@ The application manages the following primary entities:
 2. **Build and Start the Application:**
    Open a terminal in the root directory and run the following command to build the Docker images and start the services in the background:
    ```bash
-   docker-compose up --build -d
+   docker compose up --build
    ```
-   *(If you are using Docker Desktop V2, you might need to use `docker compose up --build -d` instead).*
 
 3. **Access the Services:**
    - **Web Application (Frontend)**: Open your browser and navigate to [http://localhost](http://localhost)
@@ -46,10 +44,10 @@ The application manages the following primary entities:
 4. **Stop the Application:**
    To stop the running application and remove the containers, run:
    ```bash
-   docker-compose down
+   docker compose down -v
    ```
 
 ## Development Structure
 - `./frontend`: Contains the React/Vite web application. You can navigate into this directory and run `npm run dev` for local frontend development (assuming Node.js is installed).
 - `./backend`: Contains the .NET 9 ASP.NET Core API.
-- `./init.sql` & `./populate_sql.sql`: SQL scripts that run automatically when the PostgreSQL database container is first created. If you need them to run again, make sure to delete the Docker volume named `pgdata`.
+- `./init.sql` & `./populate_sql.sql`: SQL scripts that run automatically when the PostgreSQL database container is first created.
