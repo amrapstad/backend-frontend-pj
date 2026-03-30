@@ -5,7 +5,7 @@ import { Input } from '@base-ui/react/input';
 import { Button } from '@base-ui/react/button';
 import styles from '../css/addform.module.css';
 import inputStyles from '../css/input.module.css';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 export default function AddFormBoat({ isNew }: { isNew: boolean }) {
@@ -15,13 +15,22 @@ export default function AddFormBoat({ isNew }: { isNew: boolean }) {
     const [searchKeyword, setSearchKeyword] = useState("");
     const [selectedBoat, setSelectedBoat] = useState(null);
 
-    async function handleBoatSearchDebounced(keyword: string) {
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            handleBoatSearch(searchKeyword);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchKeyword]);
+
+    async function handleBoatSearch(keyword: string) {
         setError(null)
         setLoading(true)
         try {
             const url = keyword
-                ? `/api/boats/search/debounced?keyword=${encodeURIComponent(keyword)}`
-                : `/api/boats/search/debounced`
+                ? `/api/boats/search?keyword=${encodeURIComponent(keyword)}`
+                : `/api/boats/search`
             const res = await fetch(url)
             if (!res.ok) { setError(await res.text()); setItems([]); return }
             setItems(await res.json())
@@ -43,7 +52,6 @@ export default function AddFormBoat({ isNew }: { isNew: boolean }) {
                             className={styles.Input}
                             onChange={(e) => {
                                 setSearchKeyword(e.target.value);
-                                handleBoatSearchDebounced(searchKeyword);
                             }}
                         />
                         <Field.Error className={styles.Error} />
