@@ -3,9 +3,11 @@ import * as React from 'react';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Button } from '@base-ui/react/button';
+import { Combobox } from '@base-ui/react/combobox';
 import styles from '../css/addform.module.css';
 import inputStyles from '../css/input.module.css';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import comboboxStyles from '../css/combobox.module.css';
 
 
 export default function AddFormOwner({ isNew }: { isNew: boolean }) {
@@ -14,6 +16,14 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
     const [error, setError] = useState<string | null>(null)
     const [searchKeyword, setSearchKeyword] = useState("");
     const [selectedBoat, setSelectedBoat] = useState(null);
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            handleOwnerSearchDebounced(searchKeyword);
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchKeyword]);
 
     async function handleOwnerSearchDebounced(keyword: string) {
         setError(null)
@@ -34,18 +44,36 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
             {isNew ? (
                 <>
                     <Field.Root name="owner_name" className={styles.Field}>
-                        <Field.Label className={styles.Label}>Owner name</Field.Label>
-                        <Field.Control
-                            type="text"
-                            required
-                            defaultValue={searchKeyword}
-                            placeholder="Search for an existing boat..."
-                            className={styles.Input}
-                            onChange={(e) => {
-                                setSearchKeyword(e.target.value);
-                                handleOwnerSearchDebounced(searchKeyword);
-                            }}
-                        />
+                        <Field.Label className={comboboxStyles.Label}>Owner name</Field.Label>
+                        <Combobox.Root
+                            onInputValueChange={(value: string) => setSearchKeyword(value)}
+                        >
+                            <Field.Control render={(props) => (
+                                <Combobox.Input
+                                    {...props}
+                                    type="text"
+                                    required
+                                    placeholder="Search for an existing owner..."
+                                    className={styles.Input}
+                                />
+                            )} />
+                            <Combobox.Portal>
+                                <Combobox.Positioner sideOffset={4}>
+                                    <Combobox.Popup className={comboboxStyles.Popup}>
+                                        <Combobox.List className={comboboxStyles.List}>
+                                            {items.length === 0 && !loading && searchKeyword && (
+                                                <Combobox.Empty className={comboboxStyles.Empty}>No owners found.</Combobox.Empty>
+                                            )}
+                                            {items.map((item) => (
+                                                <Combobox.Item key={item.id} value={item.ownerName} className={comboboxStyles.Item}>
+                                                    {item.ownerName}
+                                                </Combobox.Item>
+                                            ))}
+                                        </Combobox.List>
+                                    </Combobox.Popup>
+                                </Combobox.Positioner>
+                            </Combobox.Portal>
+                        </Combobox.Root>
                         <Field.Error className={styles.Error} />
                     </Field.Root>
                 </>
@@ -57,7 +85,7 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
                             type="text"
                             required
                             defaultValue=""
-                            placeholder="Boat name"
+                            placeholder="Owner name"
                             className={styles.Input}
                         />
                         <Field.Error className={styles.Error} />
