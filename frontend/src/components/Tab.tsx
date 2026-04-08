@@ -4,7 +4,7 @@ import styles from '../css/tab.module.css'
 import Search from '../tabs/Search'
 import Add from '../tabs/Add'
 
-export default function ExampleTabs() {
+export default function Tab() {
   return (
     <>
       <Tabs.Root className={styles.Tabs} defaultValue="List">
