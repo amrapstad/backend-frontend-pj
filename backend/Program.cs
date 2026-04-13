@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -22,20 +24,8 @@ if (app.Environment.IsDevelopment())
 /* POST REQUESTS  */
 /* ############## */
 
-app.MapPost("/boats", async (Boat boat, AppDbContext db) =>
-{
-    var existingBoat = await db.Boats
-        .FirstOrDefaultAsync(b => b.BoatName == boat.BoatName);
-    
-    if (existingBoat != null)
-        return Results.BadRequest("Boat already exists");
 
-    db.Boats.Add(boat);
-    await db.SaveChangesAsync();
-    return Results.Ok(boat);
-});
-
-app.MapPost("/owners", async (BoatOwner owner, AppDbContext db) =>
+app.MapPost("api/owners", async (BoatOwner owner, AppDbContext db) =>
 {
     var existingOwner = await db.BoatOwners
         .FirstOrDefaultAsync(o => o.email == owner.email);
@@ -48,7 +38,7 @@ app.MapPost("/owners", async (BoatOwner owner, AppDbContext db) =>
     return Results.Ok(owner);
 });
 
-app.MapPost("/receipts", async (CreateReceiptRequest req, AppDbContext db) =>
+app.MapPost("api/receipts", async (CreateReceiptRequest req, AppDbContext db) =>
 {
     if (req == null)
     {
@@ -107,7 +97,21 @@ app.MapPost("/receipts", async (CreateReceiptRequest req, AppDbContext db) =>
 /*  GET REQUESTS  */
 /* ############## */
 
-app.MapGet("/boats/search", async (string? keyword, AppDbContext db) =>
+app.MapGet("api/owners/search", async (string? keyword, AppDbContext db) =>
+{
+    if (keyword != null && !IsValidKeyword(keyword))
+        return Results.BadRequest("Keyword must contain letters only.");
+
+    keyword = keyword?.Trim();
+
+    var boatOwners = await db.BoatOwners
+        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.OwnerName, $"%{keyword}%"))
+        .ToListAsync();
+
+    return Results.Ok(boatOwners);
+});
+
+app.MapGet("api/boats/search/debounced", async (string? keyword, AppDbContext db) =>
 {
     if (keyword != null && !IsValidKeyword(keyword))
         return Results.BadRequest("Keyword must contain letters only.");
@@ -130,7 +134,7 @@ app.MapGet("/boats/search", async (string? keyword, AppDbContext db) =>
     return Results.Ok(boats);
 });
 
-app.MapGet("/owners/search", async (string? keyword, AppDbContext db) =>
+app.MapGet("api/owners/search/debounced", async (string? keyword, AppDbContext db) =>
 {
     if (keyword != null && !IsValidKeyword(keyword))
         return Results.BadRequest("Keyword must contain letters only.");
@@ -144,45 +148,8 @@ app.MapGet("/owners/search", async (string? keyword, AppDbContext db) =>
     return Results.Ok(boatOwners);
 });
 
-app.MapGet("/boats/search/debounced", async (string? keyword, AppDbContext db) =>
-{
-    if (keyword != null && !IsValidKeyword(keyword))
-        return Results.BadRequest("Keyword must contain letters only.");
+bool IsValidKeyword(string keyword) => keyword.All(c => char.IsLetter(c) || c == ' ');
 
-    keyword = keyword?.Trim();
-
-    var boats = await db.Boats
-        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.BoatName, $"%{keyword}%"))
-        .Select(b => new {
-            b.Id,
-            b.BoatName,
-            b.ModelYear,
-            PurchaseDate = db.BoatOwnerReceipts
-                             .Where(r => r.BoatId == b.Id)
-                             .Select(r => (DateTime?)r.PurchaseDate)
-                             .FirstOrDefault()
-        })
-        .ToListAsync();
-
-    return Results.Ok(boats);
-});
-
-app.MapGet("/owners/search/debounced", async (string? keyword, AppDbContext db) =>
-{
-    if (keyword != null && !IsValidKeyword(keyword))
-        return Results.BadRequest("Keyword must contain letters only.");
-
-    keyword = keyword?.Trim();
-
-    var boatOwners = await db.BoatOwners
-        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.OwnerName, $"%{keyword}%"))
-        .ToListAsync();
-
-    return Results.Ok(boatOwners);
-});
-
-bool IsValidKeyword(string keyword) => 
-    keyword.All(c => char.IsLetter(c) || c == ' ');
-
+app.MapControllers();
 
 app.Run(); 

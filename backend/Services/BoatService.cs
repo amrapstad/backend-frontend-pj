@@ -7,9 +7,9 @@ public class BoatService : IBoatService
         _boatRepository = boatRepository;
     }
 
-    public async Task<Boat> GetBoatByIdAsync(int id)
+    public async Task<Boat> GetBoatByKeywordAsync(string keyword)
     {
-        return await _boatRepository.GetBoatByIdAsync(id);
+        return await _boatRepository.GetBoatByKeywordAsync(keyword);
     }
 
     public async Task<List<Boat>> GetAllBoatsAsync()

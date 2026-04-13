@@ -40,8 +40,8 @@ export default function Search() {
     setLoading(true)
     try {
       const url = keyword
-        ? `/api/boats/search?keyword=${encodeURIComponent(keyword)}`
-        : `/api/boats/search`
+        ? `/api/boat/${encodeURIComponent(keyword)}`
+        : `/api/boat`
       const res = await fetch(url)
       if (!res.ok) { setError(await res.text()); setItems([]); return }
       setItems(await res.json())
@@ -113,7 +113,7 @@ export default function Search() {
       {mode === 'Boats' && items.map((item) => (
         <div className={styles.card} key={item.id}>
           <h3>{item.boatName}</h3>
-          <p>Purchased: {new Date(item.purchaseDate).toLocaleDateString()}</p>
+          <p>Model Year: {item.modelYear}</p>
         </div>
       ))}
 

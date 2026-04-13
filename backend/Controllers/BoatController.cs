@@ -1,4 +1,5 @@
 [Route("api/[controller]")]
+[ApiController]
 public class BoatController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -8,18 +9,49 @@ public class BoatController : ControllerBase
         _db = db;
     }
 
+    private bool IsValidKeyword(string keyword) {
+        return keyword.All(c => char.IsLetter(c) || c == ' ');
+    }
+
     // GET ALL -> Eks: /api/boat
     [HttpGet]           
     public async Task<IActionResult> GetAll() {
-        await Task.CompletedTask;
-        return Ok();
+        var boats = await _db.Boats
+            .Select(boat => new {
+                boat.Id,
+                boat.BoatName,
+                boat.ModelYear
+            })
+            .ToListAsync();
+
+        return Ok(boats);
     }
 
-    // GET BY ID -> Eks: /api/boat/5
-    [HttpGet("{id}")]   
-    public async Task<IActionResult> GetById(int id) {
-        await Task.CompletedTask;
-        return Ok();
+    // GET BY KEYWORD -> Eks: /api/boat/keyword
+    [HttpGet("{keyword}")]   
+    public async Task<IActionResult> GetByKeyword(string? keyword) {
+
+        // EDGE CASES
+        if (keyword != null && !IsValidKeyword(keyword))
+            return BadRequest("Keyword must contain letters only.");
+
+        if (keyword == null) {
+            return BadRequest("Keyword is null");
+        }
+
+        keyword = keyword.Trim();
+
+        var boats = await _db.Boats
+            .Where(boat => EF.Functions.ILike(boat.BoatName, $"%{keyword}%"))
+            .Select(boat => new {
+                boat.Id,
+                boat.BoatName,
+                boat.ModelYear
+
+            })
+            .ToListAsync();
+
+        return Ok(boats);
     }
 
     // POST -> Eks: /api/boat

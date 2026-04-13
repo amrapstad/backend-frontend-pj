@@ -5,8 +5,8 @@ public class BoatRepository : IBoatRepository {
         _context = context;
     }
 
-    public async Task<Boat> GetBoatByIdAsync(int id) {
-        return await _context.Boats.FindAsync(id);
+    public async Task<Boat> GetBoatByKeywordAsync(string keyword) {
+        return await _context.Boats.FindAsync(keyword);
     }
 
     public async Task<List<Boat>> GetAllBoatsAsync() {

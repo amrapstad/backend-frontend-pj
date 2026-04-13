@@ -1,5 +1,5 @@
 public interface IBoatRepository {
-    Task<Boat> GetBoatByIdAsync(int id);
+    Task<Boat> GetBoatByKeywordAsync(string keyword);
     Task<List<Boat>> GetAllBoatsAsync();
     Task<Boat> CreateBoatAsync(Boat boat);
     Task<Boat> UpdateBoatAsync(Boat boat);
