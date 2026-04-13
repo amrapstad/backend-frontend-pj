@@ -18,34 +18,3 @@ public class AppDbContext : DbContext
     }
 }
 
-public class Boat
-{
-    [Column("id")]
-    public int Id { get; set; }
-    [Column("boat_name")]
-    public string BoatName { get; set; } = string.Empty;
-    [Column("model_year")]
-    public int ModelYear { get; set; }
-}
-
-public class BoatOwnerReceipt
-{
-    [Column("id")]
-    public int Id { get; set; }
-    [Column("owner_id")]
-    public int OwnerId { get; set; }
-    [Column("boat_id")]
-    public int BoatId { get; set; }
-    [Column("purchase_date")]
-    public DateTime PurchaseDate { get; set; }
-}
-
-public class BoatOwner
-{
-    [Column("id")]
-    public int Id { get; set; }
-    [Column("owner_name")]
-    public string OwnerName { get; set; } = string.Empty;
-    [Column("email")]
-    public string email { get; set; } = string.Empty;
-}
