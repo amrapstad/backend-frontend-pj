@@ -1,7 +1,7 @@
 # Boat Management Application
 
 ## Overview
-This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a React frontend, ASP.NET Core backend API, and a PostgreSQL database.
+This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a React frontend, ASP.NET Core backend API, and a PostgreSQL database. It also currently features a automated deployment worflow to a live website through Hostinger VPS.
 
 ## Architecture & Technology Stack
 - **Frontend**: React 19, Vite, and Base UI. Built and served via Nginx in a Docker container.
@@ -19,6 +19,35 @@ The application manages the following primary entities:
 
 ## Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) installed.
+
+## Automated Deployment
+
+Developer merges a Pull Request into main branch on GitHub
+       ↓
+GitHub detects a push event on the main branch
+       ↓
+GitHub Actions spins up a fresh Ubuntu virtual machine (the "runner")
+       ↓
+The runner loads the 3 secrets (VPS_HOST, VPS_USER, VPS_SSH_KEY)
+       ↓
+appleboy/ssh-action uses the private SSH key to authenticate into the VPS
+       ↓
+GitHub Actions sends the deploy script over SSH to the VPS to execute
+       ↓
+VPS: deletes the old /root/app folder to ensure a clean slate
+       ↓
+VPS: git clone pulls the latest code from the main branch
+       ↓
+VPS: writes DB_USER and DB_PASSWORD into a .env file
+      (secrets never stored in the repo, only exist at runtime)
+       ↓
+VPS: _docker compose up -d --build_
+       ↓
+Docker rebuilds the backend image, frontend and database (for now)
+       ↓
+GitHub Actions reports success or failure in the Actions tab
+       ↓
+**App is live with the latest changes at http://187.124.23.216**
 
 ## How to Run Locally
 
