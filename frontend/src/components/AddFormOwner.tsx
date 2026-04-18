@@ -33,7 +33,11 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
                 ? `/api/owners/search/debounced?keyword=${encodeURIComponent(keyword)}`
                 : `/api/owners/search/debounced`
             const res = await fetch(url)
-            if (!res.ok) { setErrors({ server: await res.text() }); setItems([]); return }
+            if (!res.ok) {
+                setErrors({ server: await res.text() });
+                setItems([]);
+                return
+            }
             setItems(await res.json())
         } catch (err: any) {
             setErrors({ server: err.message || 'An error occurred' });
