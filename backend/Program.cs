@@ -111,28 +111,6 @@ app.MapGet("api/owners/search", async (string? keyword, AppDbContext db) =>
     return Results.Ok(boatOwners);
 });
 
-app.MapGet("api/boats/search/debounced", async (string? keyword, AppDbContext db) =>
-{
-    if (keyword != null && !IsValidKeyword(keyword))
-        return Results.BadRequest("Keyword must contain letters only.");
-
-    keyword = keyword?.Trim();
-
-    var boats = await db.Boats
-        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.BoatName, $"%{keyword}%"))
-        .Select(b => new {
-            b.Id,
-            b.BoatName,
-            b.ModelYear,
-            PurchaseDate = db.BoatOwnerReceipts
-                             .Where(r => r.BoatId == b.Id)
-                             .Select(r => (DateTime?)r.PurchaseDate)
-                             .FirstOrDefault()
-        })
-        .ToListAsync();
-
-    return Results.Ok(boats);
-});
 
 app.MapGet("api/owners/search/debounced", async (string? keyword, AppDbContext db) =>
 {

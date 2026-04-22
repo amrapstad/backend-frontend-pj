@@ -7,6 +7,8 @@ import { Form } from '@base-ui/react/form';
 import styles from '../css/addform.module.css';
 import fieldStyles from '../css/addform.module.css';
 import submitButtonStyles from '../css/other.module.css'
+import { Combobox } from '@base-ui/react/combobox'
+import comboboxStyles from '../css/combobox.module.css';
 
 
 export default function AddFormBoat({ isNew }: { isNew: boolean }) {
@@ -17,11 +19,15 @@ export default function AddFormBoat({ isNew }: { isNew: boolean }) {
 
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            handleBoatSearch(searchKeyword);
-        }, 300);
+        if (searchKeyword.length <= 1) {
+            return;
+        }
 
-        return () => clearTimeout(timer);
+        const delayDebounce = setTimeout(() => {
+            handleBoatSearch(searchKeyword);
+        }, 500);
+
+        return () => clearTimeout(delayDebounce);
     }, [searchKeyword]);
 
     async function handleBoatSearch(keyword: string) {
@@ -29,13 +35,21 @@ export default function AddFormBoat({ isNew }: { isNew: boolean }) {
         setLoading(true)
         try {
             const url = keyword
-                ? `/api/boats/search?keyword=${encodeURIComponent(keyword)}`
-                : `/api/boats/search`
+                ? `/api/boat/${encodeURIComponent(keyword)}`
+                : `/api/boat`
             const res = await fetch(url)
-            if (!res.ok) { setErrors({ server: await res.text() }); setItems([]); return }
+            if (!res.ok) {
+                setErrors({ server: await res.text() });
+                setItems([]);
+                return
+            }
             setItems(await res.json())
-        } catch (err: any) { setErrors({ server: err.message || 'An error occurred ' }) }
-        finally { setLoading(false) }
+        } catch (err: any) {
+            setErrors({ server: err.message || 'An error occurred ' })
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -102,16 +116,34 @@ export default function AddFormBoat({ isNew }: { isNew: boolean }) {
                 <>
                     <Field.Root name="boat_name" className={styles.Field}>
                         <Field.Label className={styles.Label}>Boat name</Field.Label>
-                        <Field.Control
-                            type="text"
-                            required
-                            defaultValue={searchKeyword}
-                            placeholder="Search for an existing boat..."
-                            className={styles.Input}
-                            onChange={(e) => {
-                                setSearchKeyword(e.target.value);
-                            }}
-                        />
+                        <Combobox.Root onInputValueChange={(value: string) => setSearchKeyword(value)}>
+                            <Field.Control render={(props) => (
+                                <Combobox.Input
+                                    {...props}
+                                    type="text"
+                                    required
+                                    placeholder="Search for an existing boat..."
+                                    className={fieldStyles.Input}
+                                />
+                            )}
+                            />
+                            <Combobox.Portal>
+                                <Combobox.Positioner sideOffset={4}>
+                                    <Combobox.Popup className={comboboxStyles.Popup}>
+                                        <Combobox.List className={comboboxStyles.List}>
+                                            {items.length === 0 && !loading && searchKeyword && (
+                                                <Combobox.Empty className={comboboxStyles.Empty}>No boats found.</Combobox.Empty>
+                                            )}
+                                            {items.map((item) => (
+                                                <Combobox.Item key={item.id} value={item.boatName} className={comboboxStyles.Item}>
+                                                    {item.boatName}
+                                                </Combobox.Item>
+                                            ))}
+                                        </Combobox.List>
+                                    </Combobox.Popup>
+                                </Combobox.Positioner>
+                            </Combobox.Portal>
+                        </Combobox.Root>
                         <Field.Error className={styles.Error} />
                     </Field.Root>
                 </>

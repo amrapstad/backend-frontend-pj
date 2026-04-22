@@ -18,20 +18,23 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
     const [errors, setErrors] = React.useState<Record<string, string>>({});
 
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            handleOwnerSearchDebounced(searchKeyword);
+        if (searchKeyword.length <= 1) {
+            return;
+        }
+        const delayDebounce = setTimeout(() => {
+            handleOwnerSearch(searchKeyword);
         }, 500);
 
-        return () => clearTimeout(delayDebounceFn);
+        return () => clearTimeout(delayDebounce);
     }, [searchKeyword]);
 
-    async function handleOwnerSearchDebounced(keyword: string) {
+    async function handleOwnerSearch(keyword: string) {
         setErrors({})
         setLoading(true)
         try {
             const url = keyword
-                ? `/api/owners/search/debounced?keyword=${encodeURIComponent(keyword)}`
-                : `/api/owners/search/debounced`
+                ? `/api/owners/search?keyword=${encodeURIComponent(keyword)}`
+                : `/api/owners/search`
             const res = await fetch(url)
             if (!res.ok) {
                 setErrors({ server: await res.text() });
@@ -40,10 +43,30 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
             }
             setItems(await res.json())
         } catch (err: any) {
-            setErrors({ server: err.message || 'An error occurred' });
+            setErrors({ server: err.message || 'An error occurred ' })
         }
-        finally { setLoading(false) }
+        finally {
+            setLoading(false)
+        }
     }
+
+    /*
+        async function handleOwnerSearchDebounced(keyword: string) {
+            setErrors({})
+            setLoading(true)
+            try {
+                const url = keyword
+                    ? `/api/owners/search/debounced?keyword=${encodeURIComponent(keyword)}`
+                    : `/api/owners/search/debounced`
+                const res = await fetch(url)
+                if (!res.ok) { setErrors({ server: await res.text() }); setItems([]); return }
+                setItems(await res.json())
+            } catch (err: any) {
+                setErrors({ server: err.message || 'An error occurred' });
+            }
+            finally { setLoading(false) }
+        }
+    */
 
     const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -107,9 +130,7 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
                 <>
                     <Field.Root name="owner_email" className={fieldStyles.Field}>
                         <Field.Label className={comboboxStyles.Label}>Owner email</Field.Label>
-                        <Combobox.Root
-                            onInputValueChange={(value: string) => setSearchKeyword(value)}
-                        >
+                        <Combobox.Root onInputValueChange={(value: string) => setSearchKeyword(value)}>
                             <Field.Control render={(props) => (
                                 <Combobox.Input
                                     {...props}
