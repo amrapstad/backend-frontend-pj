@@ -20,23 +20,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-/* ############## */
-/* POST REQUESTS  */
-/* ############## */
+app.MapControllers();
+app.MapBoatOwnerEndpoints(); 
 
-
-app.MapPost("api/owners", async (BoatOwner owner, AppDbContext db) =>
-{
-    var existingOwner = await db.BoatOwners
-        .FirstOrDefaultAsync(o => o.email == owner.email);
-    
-    if (existingOwner != null)
-        return Results.BadRequest("Owner already exists");  
-
-    db.BoatOwners.Add(owner);
-    await db.SaveChangesAsync();
-    return Results.Ok(owner);
-});
 
 app.MapPost("api/receipts", async (CreateReceiptRequest req, AppDbContext db) =>
 {
@@ -93,41 +79,5 @@ app.MapPost("api/receipts", async (CreateReceiptRequest req, AppDbContext db) =>
 });
 
 
-/* ############## */
-/*  GET REQUESTS  */
-/* ############## */
-
-app.MapGet("api/owners/search", async (string? keyword, AppDbContext db) =>
-{
-    if (keyword != null && !IsValidKeyword(keyword))
-        return Results.BadRequest("Keyword must contain letters only.");
-
-    keyword = keyword?.Trim();
-
-    var boatOwners = await db.BoatOwners
-        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.OwnerName, $"%{keyword}%"))
-        .ToListAsync();
-
-    return Results.Ok(boatOwners);
-});
-
-
-app.MapGet("api/owners/search/debounced", async (string? keyword, AppDbContext db) =>
-{
-    if (keyword != null && !IsValidKeyword(keyword))
-        return Results.BadRequest("Keyword must contain letters only.");
-
-    keyword = keyword?.Trim();
-
-    var boatOwners = await db.BoatOwners
-        .Where(b => string.IsNullOrEmpty(keyword) || EF.Functions.ILike(b.OwnerName, $"%{keyword}%"))
-        .ToListAsync();
-
-    return Results.Ok(boatOwners);
-});
-
-bool IsValidKeyword(string keyword) => keyword.All(c => char.IsLetter(c) || c == ' ');
-
-app.MapControllers();
 
 app.Run(); 

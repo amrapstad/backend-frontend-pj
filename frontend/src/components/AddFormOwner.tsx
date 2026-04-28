@@ -33,8 +33,8 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
         setLoading(true)
         try {
             const url = keyword
-                ? `/api/owners/search?keyword=${encodeURIComponent(keyword)}`
-                : `/api/owners/search`
+                ? `/api/owner/${encodeURIComponent(keyword)}`
+                : `/api/owner`
             const res = await fetch(url)
             if (!res.ok) {
                 setErrors({ server: await res.text() });
@@ -75,7 +75,7 @@ export default function AddFormOwner({ isNew }: { isNew: boolean }) {
         setErrors({});
 
         try {
-            const rRes = await fetch('/api/owners', {
+            const rRes = await fetch('/api/owner', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

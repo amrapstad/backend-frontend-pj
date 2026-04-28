@@ -54,8 +54,8 @@ export default function Search() {
     setLoading(true)
     try {
       const url = keyword
-        ? `/api/owners/search?keyword=${encodeURIComponent(keyword)}`
-        : `/api/owners/search`
+        ? `/api/owner/${encodeURIComponent(keyword)}`
+        : `/api/owner`
       const res = await fetch(url)
       if (!res.ok) { setError(await res.text()); setItems([]); return }
       setItems(await res.json())
@@ -119,7 +119,7 @@ export default function Search() {
 
       {mode === 'Owners' && items.map((item) => (
         <div className={styles.card} key={item.id}>
-          <h3>{item.ownerName}</h3>
+          <h3>{item.name}</h3>
           <p>Mail: {item.email}</p>
         </div>
       ))}
