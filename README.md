@@ -33,7 +33,7 @@ The application manages the following primary entities:
 - VPS: _docker compose up -d --build_
 - Docker rebuilds the backend image, frontend and database (for now)
 - GitHub Actions reports success or failure in the Actions tab
-- **App is live with the latest changes at http://187.124.23.216**
+- ~~**App is live with the latest changes at http://187.124.23.216**~~
 
 ## How to Run Locally
 
