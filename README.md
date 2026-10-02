@@ -1,9 +1,10 @@
 # Boat Management Application
 ## Purpose
-To create a functioning prototype system using docker containers.
+To set up a development lifecycle infrastructure that used docker container architecture for development and deployment. 
+
 
 ## Overview
-This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a React frontend, ASP.NET Core backend API, and a PostgreSQL database. It also currently features a automated deployment worflow to a live website through Hostinger VPS.
+This is a full-stack web application designed for managing boats, boat owners, and their purchase receipts. The application is fully containerized using Docker and consists of a React frontend, ASP.NET Core backend API, and a PostgreSQL database. It also currently features a automated deployment worflow to a ~~**live website through Hostinger VPS6**~~.
 
 ## Architecture & Technology Stack
 - **Frontend**: React 19, Vite, and Base UI. Built and served via Nginx in a Docker container.
